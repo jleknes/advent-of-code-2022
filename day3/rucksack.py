@@ -12,10 +12,9 @@ def rucksack(line):
     compartment2 = set(line[-compartment_size:])
     item = compartment1.intersection(compartment2).pop()
     return priority(item)
-    #return 0
 
 def badge(lines):
-    item = set.intersection(set(lines[0]),set(lines[1]),set(lines[2])).pop()
+    item = set.intersection(*lines).pop()
     return priority(item)
 
 def part_two():
@@ -23,8 +22,9 @@ def part_two():
     cnt = 0
     lines = []
     for line in fileinput.input():
+        sum+=badge([line,fileinput.input(),fileinput.input()])
         cnt+=1
-        lines.append(line.strip())
+        lines.append(set(line.strip()))
         if (cnt==3):
             sum+=badge(lines)
             cnt=0
