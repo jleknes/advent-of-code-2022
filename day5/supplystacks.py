@@ -1,5 +1,4 @@
 import fileinput, re
-from collections import deque
 
 
 def process_command_part_one(command, stacks):
