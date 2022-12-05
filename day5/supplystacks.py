@@ -33,7 +33,7 @@ def create_stacks(lines):
     return stacks
 
 
-def part_one():
+def solve():
     lines = []
     commands = []
     for line in fileinput.input():
@@ -59,4 +59,4 @@ def part_one():
     print("part two:", result)
 
 
-part_one()
+solve()
