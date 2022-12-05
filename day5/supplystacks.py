@@ -23,9 +23,7 @@ def process_command_part_two(command, stacks):
 def create_stacks(lines):
     # find the last number in the stack naming list
     num_stacks = int(re.findall(r"\d+", lines[len(lines) - 2].strip())[-1])
-    stacks = []
-    for i in range(num_stacks):
-        stacks.append([])
+    stacks = [[] for i in range(num_stacks)]
     for line in reversed(lines[:-2]):
         for i in range(num_stacks):
             element = line[i * 4 + 1]
