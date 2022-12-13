@@ -1,7 +1,7 @@
-import fileinput
+import fileinput, time
 
 
-def count(grid, x, y, dx, dy):
+def set_visibility(grid, x, y, dx, dy):
     global visible
     max_height = grid[x][y]
     x += dx
@@ -17,6 +17,31 @@ def count(grid, x, y, dx, dy):
         y += dy
 
 
+def part_one(grid):
+    global visible
+    visible = [[False for j in range(len(grid))] for i in range(len(grid))]
+
+    # from north
+    for i in range(1, len(grid) - 1):
+        set_visibility(grid, i, 0, 0, 1)
+    # from east
+    for i in range(1, len(grid) - 1):
+        set_visibility(grid, len(grid) - 1, i, -1, 0)
+    # from south
+    for i in range(1, len(grid) - 1):
+        set_visibility(grid, i, len(grid) - 1, 0, -1)
+    # from west
+    for i in range(1, len(grid) - 1):
+        set_visibility(grid, 0, i, 1, 0)
+    sum = 0
+    for i in range(0, len(visible)):
+        for j in range(0, len(visible)):
+            if visible[i][j]:
+                sum += 1
+    sum += 4 * len(visible) - 4
+    return sum
+
+
 def count_trees(grid, x, y, dx, dy):
     height = grid[x][y]
     x += dx
@@ -26,8 +51,7 @@ def count_trees(grid, x, y, dx, dy):
         if grid[x][y] < height:
             count += 1
         elif grid[x][y] >= height:
-            count += 1
-            return count
+            return count + 1
         x += dx
         y += dy
     return count
@@ -57,30 +81,15 @@ def read_input():
     return grid
 
 
-def solve():
+def main():
     grid = read_input()
-    global visible
-    visible = [[False for j in range(len(grid))] for i in range(len(grid))]
 
-    # from north
-    for i in range(1, len(grid) - 1):
-        count(grid, i, 0, 0, 1)
-    # from east
-    for i in range(1, len(grid) - 1):
-        count(grid, len(grid) - 1, i, -1, 0)
-    # from south
-    for i in range(1, len(grid) - 1):
-        count(grid, i, len(grid) - 1, 0, -1)
-    # from west
-    for i in range(1, len(grid) - 1):
-        count(grid, 0, i, 1, 0)
-    sum = 0
-    for i in range(0, len(visible)):
-        for j in range(0, len(visible)):
-            if visible[i][j]:
-                sum += 1
-    sum += 4 * len(visible) - 4
+    start_time = time.time()
+    sum = part_one(grid)
     print("part one:", sum)
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+    start_time = time.time()
     max_scenic_score = 0
     for i in range(0, len(grid)):
         for j in range(0, len(grid)):
@@ -88,6 +97,7 @@ def solve():
             if score > max_scenic_score:
                 max_scenic_score = score
     print("part two:", max_scenic_score)
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
-solve()
+main()
