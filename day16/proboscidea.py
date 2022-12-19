@@ -1,4 +1,4 @@
-import fileinput, itertools, time 
+import fileinput, time 
 from functools import cache
 
 flow_rate = {}
@@ -33,8 +33,6 @@ def pressure_release(active_valves):
     for valve in functioning_valves:
         if is_active(valve, active_valves):
             pressure+=flow_rate[valve]
-    
-    #print("pressure", pressure)
     return pressure
 
 @cache
@@ -59,7 +57,7 @@ def solve_part_two(minutes_left, active_valves, human_pos, elephant_pos):
     else:
         options = []
         for human_path in paths[human_pos]+[human_pos]:
-            for elephant_path in paths[elephant_pos]+[elephant_pos]:                
+            for elephant_path in paths[elephant_pos]+[elephant_pos]:
                 if human_path==human_pos and human_pos in functioning_valves:
                     options.append(solve_part_two(minutes_left-1,set_active(human_path,active_valves),human_path,elephant_path)+released_pressure)
                 if elephant_path==elephant_pos and elephant_pos in functioning_valves:
