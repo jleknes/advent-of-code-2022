@@ -30,16 +30,22 @@ def simulate():
 
 
 @cache
-def rec(minutes_left, blueprint_id, ore_robots, clay_robots, obsidian_robots, geode_robots, ore, clay, obsidian, geode):
-    if minutes_left == 0:
+def rec(minutes_left, blueprint_id, ore_robots, clay_robots, obsidian_robots, geode_robots, ore, clay, obsidian):
+
+    #pruning? 
+    # har vi noen heuristikker som kan si at denne metoden gir mindre utbytte enn beste kalkulerte mulighet så langt?
+
+    if minutes_left == 1:
         #    if geode + geode_robots == 9:
         #        print(ore + ore_robots, clay + clay_robots, obsidian + obsidian_robots, geode + geode_robots)
-        return geode + geode_robots
+        return geode_robots
     # må flyttes. mineralene kommer inn senere i prosessen.
     # ore += ore_robots
     # clay += clay_robots
     # obsidian += obsidian_robots
     # geode += geode_robots
+    max_ore_robots = max(blueprints[blueprint_id][ORE],blueprints[blueprint_id][CLAY],blueprints[blueprint_id][OBSIDIAN][0],blueprints[blueprint_id][GEODE][0])
+    max_clay_robots = blueprints[blueprint_id][OBSIDIAN][1]
 
     options = []
     if ore >= blueprints[blueprint_id][GEODE][0] and obsidian >= blueprints[blueprint_id][GEODE][1]:
@@ -52,9 +58,8 @@ def rec(minutes_left, blueprint_id, ore_robots, clay_robots, obsidian_robots, ge
             geode_robots + 1,
             ore - blueprints[blueprint_id][GEODE][0] + ore_robots,
             clay + clay_robots,
-            obsidian - blueprints[blueprint_id][GEODE][1] + obsidian_robots,
-            geode + geode_robots,
-        )
+            obsidian - blueprints[blueprint_id][GEODE][1] + obsidian_robots
+        )+ geode_robots
 
     if ore >= blueprints[blueprint_id][OBSIDIAN][0] and clay >= blueprints[blueprint_id][OBSIDIAN][1]:
         options.append(
@@ -67,11 +72,10 @@ def rec(minutes_left, blueprint_id, ore_robots, clay_robots, obsidian_robots, ge
                 geode_robots,
                 ore - blueprints[blueprint_id][OBSIDIAN][0] + ore_robots,
                 clay - blueprints[blueprint_id][OBSIDIAN][1] + clay_robots,
-                obsidian + obsidian_robots,
-                geode + geode_robots,
-            )
+                obsidian + obsidian_robots,                
+            )+ geode_robots
         )
-    if ore >= blueprints[blueprint_id][CLAY]:
+    if ore >= blueprints[blueprint_id][CLAY] and clay_robots<max_clay_robots:
         options.append(
             rec(
                 minutes_left - 1,
@@ -82,11 +86,10 @@ def rec(minutes_left, blueprint_id, ore_robots, clay_robots, obsidian_robots, ge
                 geode_robots,
                 ore - blueprints[blueprint_id][CLAY] + ore_robots,
                 clay + clay_robots,
-                obsidian + obsidian_robots,
-                geode + geode_robots,
-            )
+                obsidian + obsidian_robots
+            )+ geode_robots
         )
-    if ore >= blueprints[blueprint_id][ORE]:
+    if ore >= blueprints[blueprint_id][ORE] and ore_robots<max_ore_robots:
         options.append(
             rec(
                 minutes_left - 1,
@@ -97,9 +100,8 @@ def rec(minutes_left, blueprint_id, ore_robots, clay_robots, obsidian_robots, ge
                 geode_robots,
                 ore - blueprints[blueprint_id][ORE] + ore_robots,
                 clay + clay_robots,
-                obsidian + obsidian_robots,
-                geode + geode_robots,
-            )
+                obsidian + obsidian_robots
+            )+ geode_robots
         )
     options.append(
         rec(
@@ -111,9 +113,8 @@ def rec(minutes_left, blueprint_id, ore_robots, clay_robots, obsidian_robots, ge
             geode_robots,
             ore + ore_robots,
             clay + clay_robots,
-            obsidian + obsidian_robots,
-            geode + geode_robots,
-        )
+            obsidian + obsidian_robots
+        )+ geode_robots
     )
     return max(options)
 
@@ -135,29 +136,38 @@ def read_blueprint(line):
     blueprint[GEODE] = (int(re.findall(r"\d+", line)[5]), int(re.findall(r"\d+", line)[6]))
     return blueprint
 
-
-def solve():
-    total_quality = 0
+def read_input():
     blueprint_id = 0
     for line in fileinput.input():
         blueprint_id += 1
         blueprints[blueprint_id] = read_blueprint(line.strip())
     print(blueprints)
+
+
+def solve_part_one():
+    total_quality = 0
     for blueprint_id in blueprints.keys():
         print("processing blueprint id:", blueprint_id)
-        geodes = rec(23, blueprint_id, 1, 0, 0, 0, 0, 0, 0, 0)
+        geodes = rec(24, blueprint_id, 1, 0, 0, 0, 0, 0, 0)
+        print(geodes)
         rec.cache_clear()
         total_quality += geodes * blueprint_id
 
-    # for blueprint_id in range(1, 4):
-    #    print("processing blueprint id:", blueprint_id)
-    #    geodes = rec(31, blueprint_id, 1, 0, 0, 0, 0, 0, 0, 0)
-    #    rec.cache_clear()
-    #    total_quality += geodes * blueprint_id
+    print(total_quality)  
 
-    print(total_quality)
+def solve_part_two():   
+    product = 1
+    for blueprint_id in range(1, 4):
+        print("processing blueprint id:", blueprint_id)
+        geodes = rec(32, blueprint_id, 1, 0, 0, 0, 0, 0, 0)
+        print(geodes)
+        rec.cache_clear()
+        product*=geodes
+        print(product)
 
 
+read_input()
 start_time = time.time()
-solve()
+solve_part_one()
+solve_part_two()
 print("--- %s seconds ---" % (time.time() - start_time))
