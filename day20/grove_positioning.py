@@ -1,4 +1,4 @@
-import fileinput
+import fileinput, sys, time
 
 numbers = []
 original_position = []
@@ -34,49 +34,35 @@ def solve_part_one():
     while numbers[zero_index][0] != 0:
         zero_index += 1
     print(zero_index)
-    # print(numbers[1000 + zero_index - 1][0], numbers[2000 + zero_index - 1], numbers[3000 + zero_index - 1])
-    # print(numbers[1000 - 1][0] + numbers[2000 - 1][0] + numbers[3000 - 1][0])
-    # print(numbers[1000 + zero_index][0] + numbers[2000 + zero_index][0] + numbers[3000 + zero_index][0])
 
 
 def solve_part_two():
     for i in range(len(numbers)):
         numbers[i] = (numbers[i][0] * 811589153, numbers[i][1])
         original_position[i] = numbers[i]
-    print(numbers)
+    # print(numbers)
+    # print()
     for j in range(10):
         for i in range(len(original_position)):
             number = original_position[i]
             curr_position = numbers.index(number)
-            # new_position = (curr_position + number[0]) % (len(numbers) - 1)
-            new_position = curr_position + number[0]
-            if new_position >= len(numbers) - 1:
-                new_position %= len(numbers)
-            # elif new_position < 0:
-            #    new_position = (new_position % len(numbers)) * -1
-            # if (curr_position+number[0]>len(numbers)):
-            #    new_position-=1
-
-            # if element is popped before current position
-            # if curr_position<new_position: new_position-=1
-            # if new_position == 0:
-            #    new_position = len(numbers)
-            # print(number, curr_position, new_position)
-            if new_position > 0:
-                numbers.pop(curr_position)
-                numbers.insert(int(new_position) - 1, number)
-            # print("after ", i, numbers)
-        print("rounds", j, numbers)
-    print(numbers)
+            new_position = (curr_position + number[0]) % (len(numbers) - 1)
+            numbers.pop(curr_position)
+            numbers.insert(new_position, number)
+        # sys.stdout.write("after round " + str(j + 1) + ": ")
+        # for number in numbers:
+        #    sys.stdout.write(str(number[0]) + ", ")
+        # print()
+    # print(numbers)
     zero_index = 0
     while numbers[zero_index][0] != 0:
         zero_index += 1
     print(zero_index)
-    # print(numbers[1000 + zero_index - 1][0], numbers[2000 + zero_index - 1], numbers[3000 + zero_index - 1])
-    # print(numbers[1000 - 1][0] + numbers[2000 - 1][0] + numbers[3000 - 1][0])
-    # print(numbers[1000 + zero_index][0] + numbers[2000 + zero_index][0] + numbers[3000 + zero_index][0])
+    print(numbers[1000 + zero_index][0] + numbers[2000 + zero_index][0] + numbers[3000 + zero_index][0])
 
 
 read_input()
-solve_part_one()
+# solve_part_one()
+start_time = time.time()
 solve_part_two()
+print("--- %s seconds ---" % (time.time() - start_time))
