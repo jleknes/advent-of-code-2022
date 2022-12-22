@@ -1,4 +1,5 @@
-import fileinput
+import fileinput, time
+
 
 results = {}
 calculations = {}
@@ -13,15 +14,11 @@ def read_input():
             calculations[defines] = line[6:].strip()
 
 
+ops = {"+": int.__add__, "-": int.__sub__, "*": int.__mul__, "/": int.__floordiv__, "=": int.__eq__}
+
+
 def calculate(part1, part2, operation):
-    if operation == "*":
-        return part1 * part2
-    if operation == "+":
-        return part1 + part2
-    if operation == "/":
-        return int(part1 / part2)
-    if operation == "-":
-        return part1 - part2
+    return ops[operation](part1, part2)
 
 
 def solve_part_one():
@@ -65,7 +62,8 @@ def find_root_answer(humn, root_part):
 def solve_part_two():
     root1 = calculations["root"][0:4]
     root2 = calculations["root"][7:]
-    low, high = 0, 1000000000000000
+
+    low, high = 0, 10000000000000
     while low != high:
         mid = int((low + high) / 2)
         if abs(find_root_answer(mid, root1) == find_root_answer(mid, root2)):
@@ -73,7 +71,7 @@ def solve_part_two():
             high = mid
             continue
 
-        diff1 = abs(find_root_answer(low, root1) - find_root_answer(high, root2))
+        diff1 = abs(find_root_answer(low, root1) - find_root_answer(low, root2))
 
         diff2 = abs(find_root_answer(high, root1) - find_root_answer(high, root2))
         if diff2 < diff1:
@@ -85,5 +83,7 @@ def solve_part_two():
 
 
 read_input()
-solve_part_one()
+# solve_part_one()
+start_time = time.time()
 solve_part_two()
+print("--- %s seconds ---" % (time.time() - start_time))
